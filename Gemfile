@@ -13,6 +13,14 @@ gem "puma", ">= 5.0"
 
 gem 'rack-cors'
 
+gem "line-bot-api"
+gem "nokogiri"
+
+gem "dotenv-rails"
+
+gem 'addressable'
+gem 'rexml'
+
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 

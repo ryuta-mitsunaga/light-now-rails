@@ -10,4 +10,8 @@ Rails.application.routes.draw do
   
   post "login" => "users#login"
   post "signup" => "users#signup"
+  post "logout" => "users#logout"
+  
+  get "user/:user_id/store" => "store#index"
+  post "user/:user_id/store/:store_id/interest" => "store#interest"
 end

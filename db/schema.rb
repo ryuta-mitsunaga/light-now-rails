@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_09_125127) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_10_121037) do
+  create_table "interest_logs", force: :cascade do |t|
+    t.integer "store_id"
+    t.integer "user_id"
+    t.date "interest_datetime"
+    t.integer "interest_count"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.string "password_digest"

@@ -17,4 +17,10 @@ class UsersController < ApplicationController
     
     render json: {status: !!user ? 200 : 404, user: user }
   end
+  
+  def logout
+    session[:user_id] = nil
+    
+    render json: { status: 200, message: 'ログアウトしました。' }
+  end 
 end

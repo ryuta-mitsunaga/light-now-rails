@@ -1,0 +1,2 @@
+class InterestLog < ApplicationRecord
+end
