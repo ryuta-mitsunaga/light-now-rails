@@ -12,7 +12,7 @@
 
 ActiveRecord::Schema[7.1].define(version: 2024_01_10_121037) do
   create_table "interest_logs", force: :cascade do |t|
-    t.integer "store_id"
+    t.string "store_id"
     t.integer "user_id"
     t.date "interest_datetime"
     t.integer "interest_count"

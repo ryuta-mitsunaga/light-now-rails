@@ -22,13 +22,14 @@ class HotpepperApiService
       id: store_id
     }
     res = Net::HTTP.get_response(uri)
-    Rails.logger.debug()
+    Rails.logger.debug(uri)
   
     doc = REXML::Document.new(res.body)
     
     # URLを別途取得
     urls = REXML::XPath.match(doc, "/results/shop/urls/pc")
     results_available = REXML::XPath.match(doc, "/results/results_available")[0].text
+    genres = [REXML::XPath.match(doc, "/results/shop/genre"), REXML::XPath.match(doc, "/results/shop/sub_genre")]
     
     # [
     #   name,
@@ -45,8 +46,7 @@ class HotpepperApiService
       address_element = shop.elements["address"]
       description_element = shop.elements["catch"]
       id_element = shop.elements["id"]
-      
-      Rails.logger.debug("gener_elements: #{genre_elements}")
+      genre_elements = genres[0][i] && genres[1][i] ? [genres[0][i].elements["name"], genres[0][i].elements["catch"], genres[1][i].elements["name"]] : []
       
       name = name_element ? name_element.text : nil
       logo = logo_element ? logo_element.text : nil
