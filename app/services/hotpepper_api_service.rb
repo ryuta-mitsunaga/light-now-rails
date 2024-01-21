@@ -2,22 +2,23 @@ require 'addressable/uri'
 require 'rexml/document'
 require 'logger'
 
-class HotpepperApiService
+  class HotpepperApiService
   def initialize
     @key = ENV['HOTPEPPER_API_KEY']
     @url = 'http://webservice.recruit.co.jp/hotpepper/gourmet/v1/'
     @middle_area = 'Y050' # 池袋限定
-    @count = 10
   end
   
   # ホットペッパーのAPIを叩く
-  def get_store_info(keyword, page, forLine = false, store_id = nil)
+  def get_store_info(keyword, page, forLine = false, store_id = nil, from_name = nil)
+    count = store_id.split(',').count if store_id
+    
     uri = Addressable::URI.parse(@url)
     uri.query_values = {
       key: @key,
       keyword: keyword,
       middle_area: @middle_area,
-      count: @count,
+      count: count,
       start: page * 10,
       id: store_id
     }
@@ -62,16 +63,13 @@ class HotpepperApiService
 #{description}
 TEXT
       if forLine then
+        title = "⭐️#{from_name}さんが気になっています⭐️"
+        
         {
           "thumbnailImageUrl": logo,
           "imageBackgroundColor": "#FFFFFF",
-          "title": name[0..39],
-          "text": description_text.length > 60 ? description_text[0..59] : description_text,
-          "defaultAction": {
-            "type": "uri",
-            "label": "View detail",
-            "uri": "http://example.com/page/123"
-          },
+          "title": title,
+          "text": name[0..59],
           "actions": [
             {
               "type": "uri",

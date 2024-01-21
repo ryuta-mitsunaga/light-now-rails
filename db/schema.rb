@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_10_121037) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_13_002031) do
   create_table "interest_logs", force: :cascade do |t|
     t.string "store_id"
     t.integer "user_id"
@@ -20,9 +20,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_10_121037) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "line_accounts", force: :cascade do |t|
+    t.string "line_user_id"
+    t.string "name"
+    t.string "picture_url"
+    t.string "line_bot_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["line_bot_id", "line_user_id"], name: "index_line_accounts_on_line_bot_id_and_line_user_id", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email"
     t.string "password_digest"
+    t.string "name"
+    t.string "line_channel_secret"
+    t.string "line_channel_token"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

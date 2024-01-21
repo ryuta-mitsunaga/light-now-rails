@@ -68,4 +68,7 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
+  
+  config.hosts << "0519-2400-2410-83a3-7b00-c102-8e4b-9c4f-e28b.ngrok-free.app"
+  config.hosts << "api.lightnoweat.com"
 end

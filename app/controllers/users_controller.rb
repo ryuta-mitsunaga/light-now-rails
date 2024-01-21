@@ -13,9 +13,15 @@ class UsersController < ApplicationController
   end
   
   def signup
-    user = User.create(email: params[:email], password: (params[:password]))
+    user = User.create(
+      email: params[:email], 
+      password: (params[:password]), 
+      name: params[:name],
+      line_channel_secret: params[:lineChannelSecret],
+      line_channel_token: params[:lineChannelToken]
+    )
     
-    render json: {status: !!user ? 200 : 404, user: user }
+    render json: {status: !!user ? 200 : 404, user: user,  }
   end
   
   def logout

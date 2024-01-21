@@ -14,4 +14,8 @@ Rails.application.routes.draw do
   
   get "user/:user_id/store" => "store#index"
   post "user/:user_id/store/:store_id/interest" => "store#interest"
+
+  post "user/:user_id/store/:store_id/lineAccount/:line_account_id/lineSendMessage" => "line#sendMessage"
+  post "webhook" => "line#webhook"
+  get  "user/:user_id/lineAccount" => "line#indexAccount"
 end
