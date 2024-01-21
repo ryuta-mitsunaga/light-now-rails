@@ -42,18 +42,11 @@ class LineController < ApplicationController
       profile = JSON.parse(client(user.line_channel_secret, user.line_channel_token).get_profile(line_user_id).body)
       
       LineAccount.create(
-        line_user_id: 'Uadc78561952e9dad2fa160b900b7ca78', 
+        line_user_id: line_user_id, 
         name: profile['displayName'], 
         picture_url: profile['pictureUrl'],
-        line_bot_id: 'U3a2108667cef0a7a263959ebe2db809b'
+        line_bot_id: params['destination']
       )
-      
-      # LineAccount.create(
-      #   line_user_id: line_user_id, 
-      #   name: profile['displayName'], 
-      #   picture_url: profile['pictureUrl'],
-      #   line_bot_id: params['destination']
-      # )
     end
     
     render json: { status: 200, message: 'success' }
