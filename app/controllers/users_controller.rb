@@ -17,8 +17,7 @@ class UsersController < ApplicationController
       email: params[:email], 
       password: (params[:password]), 
       name: params[:name],
-      line_channel_secret: params[:lineChannelSecret],
-      line_channel_token: params[:lineChannelToken]
+      line_user_id: params[:line_user_id]
     )
     
     render json: {status: !!user ? 200 : 404, user: user,  }
@@ -29,4 +28,10 @@ class UsersController < ApplicationController
     
     render json: { status: 200, message: 'ログアウトしました。' }
   end 
+  
+  def searchUser
+    user = User.where(email: params[:email]).first
+    
+    render json: { status: {code: 200, message: 'success'}, user: user}
+  end
 end

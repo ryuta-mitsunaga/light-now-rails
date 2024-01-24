@@ -62,8 +62,45 @@ class LineController < ApplicationController
       id: line_account.id,
       name: line_account.name,
       picture_url: line_account.picture_url,
+      basic_id: line_account.basic_id,
     }}
     
     render json: { status: {code: 200, message: 'success'}, line_accounts: response }
+  end
+  
+  def createLineBot
+    line_bot_info = JSON.parse(client(params[:lineChannelSecret], params[:lineChannelToken]).get_bot_info.body)
+    
+    line_bot = LineBot.create(
+      user_id: params[:user_id],
+      line_bot_id: line_bot_info['userId'],
+      name: line_bot_info['displayName'],
+      picture_url: line_bot_info['pictureUrl'],
+      line_channel_secret: params[:lineChannelSecret],
+      line_channel_token: params[:lineChannelToken],
+      basic_id: line_bot_info['basicId']
+    )
+    
+    render json: { status: {code: 200, message: 'success'}, line_bot: line_bot }
+  end
+  
+  def indexLineBot
+    line_bots = LineBot.where(user_id: params[:user_id])
+    
+    render json: { status: {code: 200, message: 'success'}, line_bots: line_bots }
+  end
+  
+  def reacquisitionLineBot
+    line_bot = LineBot.find(params[:line_bot_id])
+    
+    line_bot_info = JSON.parse(client(line_bot.line_channel_secret, line_bot.line_channel_token).get_bot_info.body)
+    
+    line_bot.update(
+      name: line_bot_info['displayName'],
+      picture_url: line_bot_info['pictureUrl'],
+      basic_id: line_bot_info['basicId']
+    )
+    
+    render json: { status: {code: 200, message: 'success'}, line_bot: line_bot }
   end
 end
