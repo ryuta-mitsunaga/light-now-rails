@@ -1,8 +1,9 @@
 require './app/services/hotpepper_api_service'
 
 class StoreController < ApplicationController
+  before_action :check_logged_in
+  
   def index
-    
     return_stores = []
     paginate = {
       total_count: 0,
@@ -14,7 +15,7 @@ class StoreController < ApplicationController
 
     if is_interest_only then
       # 気になる店舗のみ取得
-      interest_logs = InterestLog.where('user_id', params[:user_id])
+      interest_logs = InterestLog.where('user_id', @user.id)
       
       store_ids = interest_logs.map{ |interest_log| interest_log.store_id }
       
@@ -44,7 +45,7 @@ class StoreController < ApplicationController
       
       stores = hotpepper_api_service.get_store_info(params[:keyword], paginate[:current_page], false)
       
-      interest_logs = InterestLog.where('user_id', params[:user_id])
+      interest_logs = InterestLog.where('user_id', @user.id)
       
       return_stores = stores[:columns].map{ |store|
         interest_log = interest_logs.find{ |interest_log| interest_log.store_id === store[:id] }
@@ -63,7 +64,7 @@ class StoreController < ApplicationController
   end
   
   def interest
-    interest_log = InterestLog.where('user_id': params[:user_id], 'store_id': params[:store_id]).first;
+    interest_log = InterestLog.where('user_id': @user.id, 'store_id': params[:store_id]).first;
     
     if (interest_log.present?) 
       interest_log.increment('interest_count', 1)
@@ -71,12 +72,18 @@ class StoreController < ApplicationController
     else
       # ログが存在しなければ作成
       InterestLog.create(
-        user_id: params[:user_id],
+        user_id: @user.id,
         store_id: params[:store_id],
         interest_datetime: Time.now,
         interest_count: 1
       )
     end
+    
+    render json: { status: 200, message: 'success' }
+  end
+  
+  def clearInterest
+    InterestLog.where('user_id': @user.id, 'store_id': params[:store_id]).first.destroy
     
     render json: { status: 200, message: 'success' }
   end

@@ -30,8 +30,40 @@ class UsersController < ApplicationController
   end 
   
   def searchUser
+    check_logged_in()
+    
     user = User.where(email: params[:email]).first
     
     render json: { status: {code: 200, message: 'success'}, user: user}
+  end
+  
+  def update
+    user = User.find(params[:id])
+    
+    user.update(
+      email: params[:email],
+      password: params[:password],
+      name: params[:name],
+      line_user_id: params[:lineUserId]
+    )
+    
+    render json: { status: {code: 200, message: 'success'}, user: user}
+  end
+  
+  def isRegistered
+    user = User.where(line_user_id: params[:line_user_id]).first
+    
+    render json: { status: {code: 200, message: 'success'}, result: !!user.email}
+  end
+  
+  def getUser
+    check_logged_in()
+    
+    # ログインしていない場合はリターン
+    unless @user then
+      return
+    end
+
+    render json: { status: {code: 200, message: 'success'}, user: @user}
   end
 end
