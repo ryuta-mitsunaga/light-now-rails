@@ -69,6 +69,11 @@ Rails.application.configure do
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
   
-  config.hosts << "0519-2400-2410-83a3-7b00-c102-8e4b-9c4f-e28b.ngrok-free.app"
+  # 開発環境のwebhookアクセスドメイン　※サーバーの立ち上げ時に毎回変わる
+  # https://qiita.com/kzsiaaidd/items/9b6e67c0d8a4fe25277b
+  config.hosts << "a0c4-2409-10-96a0-0-d4a3-2791-f814-652f.ngrok-free.app"
+  
+  # 本番環境のアクセスドメイン
   config.hosts << "api.lightnoweat.com"
+  
 end

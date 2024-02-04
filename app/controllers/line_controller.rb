@@ -13,26 +13,28 @@ class LineController < ApplicationController
     
     user = User.find(@user.id)
     store_id = params[:store_id]
-    user_group = UserGroup.find(params[:user_group_id])
-    users =  UsersUserGroup.includes(:user).where(user_group: user_group).map {|uug| {
-      id: uug.user.id,
-      name: uug.user.name,
-      line_user_id: uug.user.line_user_id,
+    send_group = SendGroup.find(params[:send_group_id])
+    
+    line_bot_friends =  LineBotFriendsSendGroup.includes(:line_bot_friend).where(send_group: send_group).map {|uug| {
+      id: uug.line_bot_friend.id,
+      name: uug.line_bot_friend.name,
+      line_user_id: uug.line_bot_friend.line_user_id,
     }}
     
-    # user_groupに紐づくLINEボットが登録されていない場合はエラーを返す
-    unless user_group.line_bot_id then
+    # send_groupに紐づくLINEボットが登録されていない場合はエラーを返す
+    unless send_group.line_bot_id then
       render json: { status: {code: 404, message: 'ユーザーグループにLINEボットが登録されていません。'}}
       return
     end
     
-    line_bot = LineBot.find(user_group.line_bot_id)
+    line_bot = LineBot.find(send_group.line_bot_id)
 
     hotpepper_api_service = HotpepperApiService.new
     
     carousel_columns = hotpepper_api_service.get_store_info('', 0, true, store_id, user.name)
     log = [];
-    users.each { |user|
+    
+    line_bot_friends.each { |line_bot_friend|
       message = {
         "type": "template",
         "altText": "⭐️#{user[:name]}さんが気になっています⭐️",
@@ -44,10 +46,9 @@ class LineController < ApplicationController
         }
       }
 
-      # TODO: 本来はline_botのline_channel_secretとline_channel_tokenを使うがなぜか送信できなくなる
-      log << client(ENV['OFFICIA_LINE_CHANNEL_SECRET'], ENV['OFFICIA_LINE_CHANNEL_TOKEN']).push_message(user[:line_user_id], message)
+      log << client(line_bot[:line_channel_secret], line_bot[:line_channel_token]).push_message(line_bot_friend[:line_user_id], message)
     }
-    
+
     render json: { status: {code: 200, message: log}}
   end
 
@@ -134,7 +135,7 @@ class LineController < ApplicationController
   end
   
   
-  def webhook
+  def webhookSignup
     if (params['events'][0]['type'] === 'follow') then
       line_user_id = params['events'][0]['source']['userId']
       
@@ -176,10 +177,41 @@ class LineController < ApplicationController
       }
       
       @client.push_message(line_user_id, message)
-      
-
     end
     
     render json: { status: 200, message: 'success' }
+  end
+  
+  def addLineBotFriend
+    if (params['events'][0]['type'] == 'follow') then
+    
+      line_bot = LineBot.find_by(line_bot_id: params['destination'])
+      line_user_id = params['events'][0]['source']['userId']
+        
+      # LINEボットが登録されていない場合はエラー返す
+      unless line_bot then
+        render json: { status: 404, message: 'LINEボットが登録されていません。' }
+        debug('LINEボットが登録されていません。')
+        return
+      end
+      
+      # 既に登録済みの場合は409を返す
+      if LineBotFriend.where(line_user_id: line_user_id, line_bot_id: line_bot.id).first then
+        render json: { status: 409, message: '既に登録済みです。' }
+        debug('既に登録済みです。')
+        return
+      end
+      
+      client(line_bot.line_channel_secret, line_bot.line_channel_token)
+      profile = JSON.parse(@client.get_profile(line_user_id).body)
+      
+      line_bot_friend = LineBotFriend.create(
+        line_bot: line_bot,
+        line_user_id: line_user_id,
+        name: profile['displayName'],
+        picture_url: profile['pictureUrl']
+      )
+
+    end
   end
 end

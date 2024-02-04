@@ -1,6 +1,6 @@
 require "test_helper"
 
-class UsersSendGroupTest < ActiveSupport::TestCase
+class LineBotFriendTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

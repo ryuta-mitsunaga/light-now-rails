@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_23_215440) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_03_070229) do
   create_table "interest_logs", force: :cascade do |t|
     t.string "store_id"
     t.integer "user_id"
@@ -30,6 +30,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_23_215440) do
     t.index ["line_bot_id", "line_user_id"], name: "index_line_accounts_on_line_bot_id_and_line_user_id", unique: true
   end
 
+  create_table "line_bot_friends", force: :cascade do |t|
+    t.string "line_user_id"
+    t.integer "line_bot_id"
+    t.string "name"
+    t.string "picture_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "line_bot_friends_send_groups", force: :cascade do |t|
+    t.integer "line_bot_friend_id", null: false
+    t.integer "send_group_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["line_bot_friend_id"], name: "index_line_bot_friends_send_groups_on_line_bot_friend_id"
+    t.index ["send_group_id"], name: "index_line_bot_friends_send_groups_on_send_group_id"
+  end
+
   create_table "line_bots", force: :cascade do |t|
     t.integer "user_id"
     t.string "line_bot_id"
@@ -42,11 +60,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_23_215440) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "user_groups", force: :cascade do |t|
+  create_table "send_groups", force: :cascade do |t|
     t.string "group_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "line_bot_id"
+    t.integer "line_bot_id"
     t.integer "created_user_id"
   end
 
@@ -57,17 +75,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_23_215440) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "line_user_id"
+    t.string "line_bot_friend_id"
   end
 
-  create_table "users_user_groups", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "user_group_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_group_id"], name: "index_users_user_groups_on_user_group_id"
-    t.index ["user_id"], name: "index_users_user_groups_on_user_id"
-  end
-
-  add_foreign_key "users_user_groups", "user_groups"
-  add_foreign_key "users_user_groups", "users"
+  add_foreign_key "line_bot_friends_send_groups", "line_bot_friends"
+  add_foreign_key "line_bot_friends_send_groups", "send_groups"
 end
