@@ -117,24 +117,6 @@ class LineController < ApplicationController
     render json: { status: {code: 200, message: 'success'}, line_bot: line_bot }
   end
   
-  def linkageLineAccount
-    user = User.find(@user.id)
-    
-    debug(ENV['OFFICIA_LINE_CHANNEL_SECRET'])
-    debug(ENV['OFFICIA_LINE_CHANNEL_TOKEN'])
-    
-    # .envのLINE_USER_ID_FOR_OFFICIAL_DEVを使う
-    link_token = client(ENV['OFFICIA_LINE_CHANNEL_SECRET'], ENV['OFFICIA_LINE_CHANNEL_TOKEN']).create_link_token(ENV['OFFICIAL_LINE_USER_ID'])
-    debug(link_token)
-    
-    # line_account = LineAccount.find(params[:line_account_id])
-    
-    # client(user.line_channel_secret, user.line_channel_token).link_rich_menu_to_user(line_account.line_user_id, params[:rich_menu_id])
-    
-    # render json: { status: {code: 200, message: 'success'}, line_account: line_account }
-  end
-  
-  
   def webhookSignup
     if (params['events'][0]['type'] === 'follow') then
       line_user_id = params['events'][0]['source']['userId']
