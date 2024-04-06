@@ -5,9 +5,9 @@ class ShogiChannel < ApplicationCable::Channel
     serialize_user = current_user.as_json
 
     is_duplicate = redis.lrange("shogi_channel_#{params[:room_id]}", 0, -1).any? do |user|
-      if JSON.parse(user)['id'] == current_user.id
+      JSON.parse(user)['id'] == current_user.id
     end
-    
+
     # 再入室の場合はreturn
     return if is_duplicate
 
